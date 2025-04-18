@@ -24,6 +24,7 @@ COUNT_PAIRS_CACHE_FILE = "cache/raw_count_pairs_cache.json"
 
 
 def parse_args():
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description="Correlate incidents to changes with LLM-based filtering"
     )
@@ -36,6 +37,7 @@ def parse_args():
 
 
 def load_cache(path):
+    """Load cache from a JSON file."""
     try:
         if os.path.exists(path):
             with open(path, "r") as f:
@@ -47,6 +49,7 @@ def load_cache(path):
 
 
 def save_cache(cache, path):
+    """Save cache to a JSON file."""
     try:
         with open(path, "w") as f:
             json.dump(cache, f, indent=2)
@@ -56,6 +59,33 @@ def save_cache(cache, path):
 
 
 def classify_with_llm(items, prompt_template, cache_file, model):
+    """
+    Classify items using LLM and cache results.
+
+    Args:
+        items: List of items to classify.
+        prompt_template: Template for the prompt.
+        cache_file: Path to the cache file.
+        model: Model name.
+
+    Returns:
+        Dictionary of classified items.
+
+    1. Load cache from the specified file.
+    2. Initialize an empty dictionary for results.
+    3. Iterate over each item in the input list.
+    4. Create a unique key for each item.
+    5. Check if the key is already in the cache.
+    6. If found, retrieve the label from the cache.
+    7. If not found, create a prompt using the template.
+    8. Call the LLM API to get the label.
+    9. Handle any exceptions during the API call.
+    10. Save the label to the cache.
+    11. Store the label in the results dictionary.
+    12. Save the updated cache to the file.
+    13. Return the results dictionary.
+    14. Handle any unexpected errors and print the stack trace.
+    """
     try:
         cache = load_cache(cache_file)
         results = {}
@@ -92,10 +122,11 @@ def classify_with_llm(items, prompt_template, cache_file, model):
     except Exception as e:
         print(f"Unexpected error in classify_with_llm: {e}", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
-        return {}
+        sys.exit(1)
 
 
 def load_and_prepare(change_path, incident_path):
+    """Load and prepare data from CSV files."""
     try:
         changes = pd.read_csv(change_path)
         changes["timestamp"] = pd.to_datetime(
@@ -117,6 +148,25 @@ def load_and_prepare(change_path, incident_path):
 
 
 def raw_correlate(changes, incidents, window_minutes):
+    """ "
+    Correlate changes and incidents based on a time window."
+
+    Args:
+        changes: DataFrame of changes.
+        incidents: DataFrame of incidents.
+        window_minutes: Time window in minutes.
+
+    Returns:
+        Dictionary of correlated pairs and their counts.
+
+    1. Group changes and incidents by account_id and service_id.
+    2. Find common groups between incidents and changes.
+    3. For each incident, find changes within the time window.
+    4. Count unique change titles for each incident.
+    5. Return a dictionary of correlated pairs and their counts.
+    6. Handle exceptions and print error messages.
+
+    """
     try:
         window = timedelta(minutes=window_minutes)
         results = defaultdict(int)
@@ -155,6 +205,7 @@ def raw_correlate(changes, incidents, window_minutes):
 
 
 def save_raw_results(results):
+    """Save raw results to a JSON file."""
     try:
         serializable = {
             json.dumps(key, ensure_ascii=False): count for key, count in results.items()
@@ -168,6 +219,24 @@ def save_raw_results(results):
 
 
 def filter_noise(changes, incidents, model):
+    """
+    Filters noise from changes and incidents using LLM classification."
+
+    Args:
+        changes: DataFrame of changes.
+        incidents: DataFrame of incidents.
+        model: Model name.
+
+    Returns:
+        Tuple of filtered changes and incidents.
+
+    1. Classify change titles as MEANINGFUL or NOISE.
+    2. Filter changes based on classification.
+    3. Classify incident titles as MEANINGFUL or NOISE.
+    4. Filter incidents based on classification.
+    5. Return filtered changes and incidents.
+    6. Handle exceptions and print error messages.
+    """
     try:
         # Separately classify change titles
         change_titles = set(changes["title"])
@@ -205,6 +274,23 @@ def filter_noise(changes, incidents, model):
 
 
 def filter_causality(raw_results, model):
+    """
+    Filter causality using LLM classification.
+
+    Args:
+        raw_results: Dictionary of raw results.
+        model: Model name.
+
+    Returns:
+        Dictionary of filtered results.
+
+    1. Create a prompt for causality classification.
+    2. Classify pairs using the LLM.
+    3. Filter pairs based on classification.
+    4. Return filtered results.
+    5. Handle exceptions and print error messages.
+
+    """
     try:
         prompt = (
             "We have a system change: '{item[1]}' and an incident: '{item[0]}'.\n"
@@ -226,6 +312,7 @@ def filter_causality(raw_results, model):
 
 
 def write_results(results, output_path):
+    """Write results to a JSON file."""
     try:
         out = {f"{i} ||| {c}": cnt for (i, c), cnt in results.items()}
         with open(output_path, "w") as f:
@@ -237,22 +324,27 @@ def write_results(results, output_path):
 
 
 def main():
+    """Main function to run the correlation process."""
+
+    # Parse command line arguments
     args = parse_args()
 
+    # Load and prepare data
     changes, incidents = load_and_prepare(args.changes, args.incidents)
 
-    # 1. Noise filtering
+    # Noise filtering
     clean_changes, clean_incidents = filter_noise(changes, incidents, args.model)
 
-    # 2. Raw correlation
+    # Raw correlation
     raw = raw_correlate(clean_changes, clean_incidents, args.window_minutes)
 
+    # Save raw results
     save_raw_results(raw)
 
-    # 3. Causality filtering
+    # Causality filtering
     causal = filter_causality(raw, args.model)
 
-    # 4. Output
+    # Output File
     write_results(causal, args.output)
 
     print(f"Done: wrote {len(causal)} causal pairs to {args.output}")

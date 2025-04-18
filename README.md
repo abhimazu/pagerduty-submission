@@ -32,8 +32,8 @@ This repository contains a Python-based solution to identify and count unique ca
 
 1. Clone the repository:
    ```bash
-   git clone <repo-url>
-   cd <repo>
+   git clone https://github.com/abhimazu/pagerduty-submission.git
+   cd pagerduty-submission
    ```
 2. Create and activate a virtual environment:
    ```bash
@@ -81,7 +81,7 @@ flowchart LR
 ## Key Functions
 
 - **`load_and_prepare()`**: Ingests CSVs, parses timestamps, and selects necessary fields.
-- **`filter_noise()`**: Calls LLM to understand each unique title within incidents, change records and removes `NOISE` titles, caching results to avoid repeat LLM calls.
+- **`filter_noise()`**: Calls LLM to understand each unique title within incidents, change records. It classifies and removes `NOISE` titles, caching results to avoid repeat LLM calls.
 - **`raw_correlate()`**: Implements the sliding window algorithm with a deque to correlate events within the given time period.
 - **`filter_causality()`**: Uses LLM classification to confirm true causal pairs from the above correlation.
 - **`write_results()`**: Serializes the final counts to JSON.
