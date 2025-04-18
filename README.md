@@ -67,6 +67,23 @@ python correlate.py \
 
 ## Architecture & Flow
 
+The solution is structured into five logical stages, each designed for clarity, efficiency, and scalability:
+
+1. **Data Ingestion & Preparation**  
+   Both CSV files are loaded into pandas DataFrames, timestamps are parsed, and only the required columns (`account_id`, `service_id`, `title`, `timestamp`) are selected. All timestamps are converted to datetime objects to ensure accurate time‑based computations.
+
+2. **LLM‑Driven Noise Filtering**  
+   Each unique change and incident title is classified as `MEANINGFUL` or `NOISE` using an LLM via the OpenAI API. Classification results are cached locally to minimize redundant API calls, and noise entries are filtered out before correlation.
+
+3. **Sliding‑Window Correlation**  
+   Events are grouped by the combined key `(account_id, service_id)`, ensuring comparisons remain within the same service context. Within each group, change and incident events are sorted by timestamp. A deque is used to maintain change events occurring within the 60‑minute window preceding each incident; expired entries are evicted automatically, and unique change titles are counted once per incident.
+
+4. **Causality Confirmation**  
+   The LLM is queried again to determine whether each `(incident title, change title)` pair represents a true causal relationship. Pairs labeled `CAUSAL` are retained, while others are discarded.
+
+5. **Result Serialization**  
+   Final causal pairs and their counts are serialized to JSON in the `"incident_title ||| change_title": count` format. Entries with zero counts are omitted, producing a concise output.
+
 ```mermaid
 flowchart LR
     A[Start] --> B[Load & Parse CSVs]
@@ -77,6 +94,13 @@ flowchart LR
     F --> G[Write Final JSON Output]
     G --> H[End]
 ```
+
+This architecture leverages:
+
+- Partitioning by service context for parallelism
+- Caching of LLM responses for performance
+- Deque‑based windowing for O(N) per‑group complexity
+- Modularity for easy testing and extension
 
 ## Key Functions
 
