@@ -9,8 +9,7 @@ This repository contains a Python-based solution to identify and count unique ca
 - [Installation](#installation)
 - [Usage](#usage)
 - [Architecture & Flow](#architecture--flow)
-- [Key Modules](#key-modules)
-- [Next Steps & Improvements](#next-steps--improvements)
+- [Key Functions](#key-functions)
 
 ## Assumptions
 
