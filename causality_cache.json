@@ -1,0 +1,12 @@
+{
+  "API endpoint 123 is not responding ||| DE-100: Change AWS Security Group Policy (committed by John Smith)": "CAUSAL",
+  "HTTPS service is down ||| DE-100: Change AWS Security Group Policy (committed by John Smith)": "CAUSAL",
+  "Health check error ||| DE-100: Change AWS Security Group Policy (committed by John Smith)": "CAUSAL",
+  "Health check error ||| Successfully deployed module": "NOT_CAUSAL",
+  "Health check error ||| Bug fix in code: line 100": "CAUSAL",
+  "API endpoint 456 is not responding ||| Merge Pull Request": "CAUSAL",
+  "API endpoint 789 is not responding ||| Merge Pull Request": "CAUSAL",
+  "API endpoint 123 is not responding ||| Merge Pull Request": "CAUSAL",
+  "API endpoint 456 is not responding ||| Build Success: Increase snapshot create timeout to 30 seconds": "CAUSAL",
+  "HTTPS service is down ||| Build Success: Increase snapshot create timeout to 30 seconds": "CAUSAL"
+}

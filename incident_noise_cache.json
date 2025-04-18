@@ -1,0 +1,13 @@
+{
+  "***************not important incident***************": "NOISE",
+  "API endpoint 456 is not responding": "MEANINGFUL",
+  "***************critical incident***************": "NOISE",
+  "HTTPS service is down": "MEANINGFUL",
+  "Fusce posuere felis sed lacus. Morbi sem mauris; laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem. Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci. Nullam molestie nibh in lectus. <div class=\"liveSample\" spry:region=\"dsExample2\"> Values from array: <span spry:repeatchildren=\"dsExample2\">{color}({value}) </span> </div>": "NOISE",
+  "Health check error": "MEANINGFUL",
+  "API endpoint 789 is not responding": "MEANINGFUL",
+  "Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl. Nunc rhoncus dui vel sem. Sed sagittis. Nam congue, risus semper porta volutpat, quam pede lobortis ligula, sit amet eleifend pede libero quis orci.": "NOISE",
+  "Health check error - escalated": "MEANINGFUL",
+  "API endpoint 123 is not responding": "MEANINGFUL",
+  "Are you awake?": "NOISE"
+}
