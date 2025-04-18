@@ -71,7 +71,7 @@ python correlate.py \
 flowchart LR
     A[Start] --> B[Load & Parse CSVs]
     B --> C[Noise Filtering]
-    C --> D[Raw Correlation (Sliding Window)]
+    C --> D[Raw Correlation]
     D --> E[Save Raw Results]
     E --> F[Causality Filtering via LLM]
     F --> G[Write Final JSON Output]
