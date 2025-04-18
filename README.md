@@ -55,8 +55,8 @@ This repository contains a Python-based solution to identify and count unique ca
 
 ```bash
 python correlate.py \
-  --changes change_events.csv \
-  --incidents incident_events.csv \
+  --changes csv/change_events.csv \
+  --incidents csv/incident_events.csv \
   --output final_output.json \
   --window-minutes 60 \
   --model gpt-4.1-nano

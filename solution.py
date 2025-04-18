@@ -17,10 +17,10 @@ if not OPENAI_API_KEY:
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Caching filenames
-CHANGE_NOISE_CACHE_FILE = "change_noise_cache.json"
-INCIDENT_NOISE_CACHE_FILE = "incident_noise_cache.json"
-CAUSALITY_CACHE_FILE = "causality_cache.json"
-COUNT_PAIRS_CACHE_FILE = "raw_count_pairs_cache.json"
+CHANGE_NOISE_CACHE_FILE = "cache/change_noise_cache.json"
+INCIDENT_NOISE_CACHE_FILE = "cache/incident_noise_cache.json"
+CAUSALITY_CACHE_FILE = "cache/causality_cache.json"
+COUNT_PAIRS_CACHE_FILE = "cache/raw_count_pairs_cache.json"
 
 
 def parse_args():
